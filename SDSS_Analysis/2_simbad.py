@@ -21,7 +21,7 @@ def query_simbad(row):
     
     try:
         result_table = simbad_query.query_region(
-            SkyCoord(ra, dec, unit=(u.deg, u.deg), frame='icrs'),
+            SkyCoord(ra, dec, unit=(u.deg, u.deg), frame='fk5'),
             radius='0d0m01s'
         )
         if result_table is not None and len(result_table) > 0:
