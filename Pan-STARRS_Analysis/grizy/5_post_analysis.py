@@ -75,7 +75,7 @@ def plot_latent_space(NN_data, filtered_data, filename, specific_types=None, max
         ax.legend(loc='upper right', frameon=True, framealpha=0.8)
         
         plt.tight_layout()
-        plt.savefig(f'{filename}_batch{batch + 1}.png', dpi=300, bbox_inches='tight')
+        plt.savefig(os.path.join(PLOT_DIR, f'{filename}_batch{batch + 1}.png'), dpi=300, bbox_inches='tight')
         plt.close()
 
 def plot_latent_space_by_magnitude(data, filename_prefix):
@@ -95,7 +95,7 @@ def plot_latent_space_by_magnitude(data, filename_prefix):
         ax.set_title(f'Composite Stellar Feature Space (CSFS) Colored by {band}', fontweight='bold')
         
         plt.tight_layout()
-        plt.savefig(f'{filename_prefix}_{band}.png', dpi=300, bbox_inches='tight')
+        plt.savefig(os.path.join(PLOT_DIR, f'{filename_prefix}_{band}.png'), dpi=300, bbox_inches='tight')
         plt.close()
 
 def plot_latent_space_by_color_combinations(data, filename_prefix):
@@ -118,7 +118,7 @@ def plot_latent_space_by_color_combinations(data, filename_prefix):
         ax.set_title(f'CSFS Colored by {combo[0]}-{combo[1]} Color', fontweight='bold')
         
         plt.tight_layout()
-        plt.savefig(f'{filename_prefix}_{combo[0]}-{combo[1]}.png', dpi=300, bbox_inches='tight')
+        plt.savefig(os.path.join(PLOT_DIR, f'{filename_prefix}_{combo[0]}-{combo[1]}.png'), dpi=300, bbox_inches='tight')
         plt.close()
 
 def plot_cmd(data, data_simbad, band1, band2, filename_prefix):
@@ -138,7 +138,7 @@ def plot_cmd(data, data_simbad, band1, band2, filename_prefix):
     ax.set_title('Color-Magnitude Diagram (CMD) - No Labels', fontweight='bold')
     
     plt.tight_layout()
-    plt.savefig(f'{filename_prefix}_no_labels.png', dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(PLOT_DIR, f'{filename_prefix}_no_labels.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
     labels_to_plot = ['BlueStraggler', 'HorBranch*_Candidate', 'RRLyrae', 'RSCVnV*', 'HotSubdwarf']
@@ -158,7 +158,7 @@ def plot_cmd(data, data_simbad, band1, band2, filename_prefix):
     ax.legend()
     
     plt.tight_layout()
-    plt.savefig(f'{filename_prefix}_with_labels.png', dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(PLOT_DIR, f'{filename_prefix}_with_labels.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
 def plot_cmd_density(data, band1, band2, filename):
@@ -183,7 +183,7 @@ def plot_cmd_density(data, band1, band2, filename):
     ax.set_title('Color-Magnitude Diagram (CMD) - Density Plot', fontweight='bold')
     
     plt.tight_layout()
-    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(PLOT_DIR, filename), dpi=300, bbox_inches='tight')
     plt.close()
 
 def plot_latent_space_by_category(NN_data, filtered_data, filename_prefix):
@@ -217,7 +217,7 @@ def plot_latent_space_by_category(NN_data, filtered_data, filename_prefix):
     ax.set_ylabel(r'$\Lambda$', fontweight='bold')
     ax.legend(loc='upper right', frameon=True, framealpha=0.8)
     plt.tight_layout()
-    plt.savefig(f'{filename_prefix}_selected_categories.png', dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(PLOT_DIR, f'{filename_prefix}_selected_categories.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
     # Plot each category separately with object types
@@ -251,74 +251,74 @@ def plot_latent_space_by_category(NN_data, filtered_data, filename_prefix):
         ax.legend(loc='upper right', frameon=True, framealpha=0.8)
        
         plt.tight_layout()
-        plt.savefig(f'{filename_prefix}_{category.replace(" ", "_")}_object_types.png', dpi=300, bbox_inches='tight')
+        plt.savefig(os.path.join(PLOT_DIR, f'{filename_prefix}_{category.replace(" ", "_")}_object_types.png'), dpi=300, bbox_inches='tight')
         plt.close()
 
-# def plot_color_color_by_category(NN_data, filtered_data, filename_prefix):
-#     set_plot_style()
+def plot_color_color_by_category(NN_data, filtered_data, filename_prefix):
+    set_plot_style()
    
-#     filtered_data['category'] = filtered_data['object_type'].map(object_type_categories)
-#     categories = ['Compact Object', 'Main Sequence', 'He Core', 'RGB', 'Post-RGB']
+    filtered_data['category'] = filtered_data['object_type'].map(object_type_categories)
+    categories = ['Compact Object', 'Main Sequence', 'He Core', 'RGB', 'Post-RGB']
    
-#     # Define the color scheme
-#     category_colors = {
-#         'Compact Object': 'purple',
-#         'Main Sequence': 'blue',
-#         'He Core': 'green',
-#         'RGB': 'orange',
-#         'Post-RGB': 'red'
-#     }
+    # Define the color scheme
+    category_colors = {
+        'Compact Object': 'purple',
+        'Main Sequence': 'blue',
+        'He Core': 'green',
+        'RGB': 'orange',
+        'Post-RGB': 'red'
+    }
    
-#     # Plot selected categories together
-#     fig, ax = plt.subplots(figsize=(12, 10))
-#     ax.scatter(NN_data['gMeanPSFMag'] - NN_data['iMeanPSFMag'], NN_data['rMeanPSFMag'] - NN_data['gMeanPSFMag'], c='gray', s=1, alpha=0.6, marker='.', label='All Stars')
+    # Plot selected categories together
+    fig, ax = plt.subplots(figsize=(12, 10))
+    ax.scatter(NN_data['gMeanPSFMag'] - NN_data['iMeanPSFMag'], NN_data['rMeanPSFMag'] - NN_data['gMeanPSFMag'], c='gray', s=1, alpha=0.6, marker='.', label='All Stars')
    
-#     for category in categories:
-#         category_data = filtered_data[filtered_data['category'] == category]
-#         ax.scatter(category_data['gMeanPSFMag'] - category_data['iMeanPSFMag'], category_data['rMeanPSFMag'] - category_data['gMeanPSFMag'],
-#                    label=category, s=25, alpha=0.8, c=category_colors[category], marker='x')
+    for category in categories:
+        category_data = filtered_data[filtered_data['category'] == category]
+        ax.scatter(category_data['gMeanPSFMag'] - category_data['iMeanPSFMag'], category_data['rMeanPSFMag'] - category_data['gMeanPSFMag'],
+                   label=category, s=25, alpha=0.8, c=category_colors[category], marker='x')
    
-#     ax.invert_yaxis()
-#     customize_axes(ax)
-#     ax.set_xlabel(r'$g-i$', fontweight='bold')
-#     ax.set_ylabel(r'$u-g$', fontweight='bold')
-#     ax.legend(loc='upper right', frameon=True, framealpha=0.8)
-#     plt.tight_layout()
-#     plt.savefig(f'{filename_prefix}_selected_categories.png', dpi=300, bbox_inches='tight')
-#     plt.close()
+    ax.invert_yaxis()
+    customize_axes(ax)
+    ax.set_xlabel(r'$g-i$', fontweight='bold')
+    ax.set_ylabel(r'$u-g$', fontweight='bold')
+    ax.legend(loc='upper right', frameon=True, framealpha=0.8)
+    plt.tight_layout()
+    plt.savefig(os.path.join(PLOT_DIR, f'{filename_prefix}_selected_categories.png'), dpi=300, bbox_inches='tight')
+    plt.close()
 
-#     # Plot each category separately with object types
-#     for category in categories:
-#         fig, ax = plt.subplots(figsize=(12, 10))
+    # Plot each category separately with object types
+    for category in categories:
+        fig, ax = plt.subplots(figsize=(12, 10))
        
-#         ax.scatter(NN_data['gMeanPSFMag'] - NN_data['iMeanPSFMag'], NN_data['rMeanPSFMag'] - NN_data['gMeanPSFMag'], c='gray', s=1, alpha=0.6, marker='.', label='All Stars')
+        ax.scatter(NN_data['gMeanPSFMag'] - NN_data['iMeanPSFMag'], NN_data['rMeanPSFMag'] - NN_data['gMeanPSFMag'], c='gray', s=1, alpha=0.6, marker='.', label='All Stars')
        
-#         category_data = filtered_data[filtered_data['category'] == category]
-#         object_types = category_data['object_type'].unique()
+        category_data = filtered_data[filtered_data['category'] == category]
+        object_types = category_data['object_type'].unique()
         
-#         # Create a color map for object types
-#         n_colors = len(object_types)
-#         colors = plt.cm.rainbow(np.linspace(0, 1, n_colors))
-#         color_dict = dict(zip(object_types, colors))
+        # Create a color map for object types
+        n_colors = len(object_types)
+        colors = plt.cm.rainbow(np.linspace(0, 1, n_colors))
+        color_dict = dict(zip(object_types, colors))
         
-#         for object_type in object_types:
-#             object_type_data = category_data[category_data['object_type'] == object_type]
-#             ax.scatter(object_type_data['gMeanPSFMag'] - object_type_data['iMeanPSFMag'], 
-#                        object_type_data['rMeanPSFMag'] - object_type_data['gMeanPSFMag'],
-#                        label=object_type, s=25, alpha=0.8, c=[color_dict[object_type]], marker='x')
+        for object_type in object_types:
+            object_type_data = category_data[category_data['object_type'] == object_type]
+            ax.scatter(object_type_data['gMeanPSFMag'] - object_type_data['iMeanPSFMag'], 
+                       object_type_data['rMeanPSFMag'] - object_type_data['gMeanPSFMag'],
+                       label=object_type, s=25, alpha=0.8, c=[color_dict[object_type]], marker='x')
        
-#         ax.invert_yaxis()
-#         customize_axes(ax)
+        ax.invert_yaxis()
+        customize_axes(ax)
        
-#         ax.set_xlabel(r'$g-i$', fontweight='bold')
-#         ax.set_ylabel(r'$u-g$', fontweight='bold')
-#         ax.set_title(f'Category: {category}')
+        ax.set_xlabel(r'$g-i$', fontweight='bold')
+        ax.set_ylabel(r'$u-g$', fontweight='bold')
+        ax.set_title(f'Category: {category}')
        
-#         ax.legend(loc='upper right', frameon=True, framealpha=0.8)
+        ax.legend(loc='upper right', frameon=True, framealpha=0.8)
        
-#         plt.tight_layout()
-#         plt.savefig(f'{filename_prefix}_{category.replace(" ", "_")}_object_types.png', dpi=300, bbox_inches='tight')
-#         plt.close()
+        plt.tight_layout()
+        plt.savefig(os.path.join(PLOT_DIR, f'{filename_prefix}_{category.replace(" ", "_")}_object_types.png'), dpi=300, bbox_inches='tight')
+        plt.close()
 
 
 def plot_latent_space_multiple_GCs(df_CSFS_grizy, filename_prefix, gc_data):
@@ -371,7 +371,7 @@ def plot_latent_space_multiple_GCs(df_CSFS_grizy, filename_prefix, gc_data):
         ax_single.legend(loc='upper right', frameon=True, framealpha=0.8)
         
         plt.tight_layout()
-        plt.savefig(f'{filename_prefix}_{gc_name.replace(" ", "_")}.png', dpi=300, bbox_inches='tight')
+        plt.savefig(os.path.join(PLOT_DIR, f'{filename_prefix}_{gc_name.replace(" ", "_")}.png'), dpi=300, bbox_inches='tight')
         plt.close(fig_single)
     
     # Finalize and save the combined plot
@@ -386,64 +386,8 @@ def plot_latent_space_multiple_GCs(df_CSFS_grizy, filename_prefix, gc_data):
     ax.legend(loc='upper right', frameon=True, framealpha=0.8)
     
     plt.tight_layout()
-    plt.savefig(f'{filename_prefix}_combined.png', dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(PLOT_DIR, f'{filename_prefix}_combined.png'), dpi=300, bbox_inches='tight')
     plt.close(fig)
-
-def plot_gmm(X, gmm, labels, title, filename):
-    plt.figure(figsize=(12, 10))
-    plt.scatter(X[:, 0], X[:, 1], c=labels, cmap='viridis', alpha=0.7, s=5)
-    
-    for i, (mean, covar) in enumerate(zip(gmm.means_, gmm.covariances_)):
-        v, w = np.linalg.eigh(covar)
-        v = 2. * np.sqrt(2.) * np.sqrt(v)
-        u = w[0] / np.linalg.norm(w[0])
-        angle = np.arctan2(u[1], u[0])
-        angle = 180. * angle / np.pi  # convert to degrees
-        ell = Ellipse(xy=mean, width=v[0], height=v[1], angle=180. + angle, 
-                      edgecolor='red', facecolor='none', alpha=0.5)
-        plt.gca().add_artist(ell)
-    
-    plt.title(title, fontweight='bold')
-    plt.xlabel(r'$\Gamma$', fontweight='bold')
-    plt.ylabel(r'$\Lambda$', fontweight='bold')
-    plt.colorbar(label='Cluster')
-    plt.gca().invert_yaxis()
-    customize_axes(plt.gca())
-    plt.tight_layout()
-    plt.savefig(filename, dpi=300, bbox_inches='tight')
-    plt.close()
-
-def gmm_clustering(data, n_components_range=range(2, 21)):
-    # Use unscaled data
-    X = data[['Gamma', 'Lambda']].values
-
-    # Perform model selection using BIC
-    bic = []
-    for n_components in n_components_range:
-        gmm = GaussianMixture(n_components=n_components, random_state=42)
-        gmm.fit(X)
-        bic.append(gmm.bic(X))
-    
-    optimal_n_components = n_components_range[np.argmin(bic)]
-    
-    # Fit the optimal model
-    gmm = GaussianMixture(n_components=optimal_n_components, random_state=42)
-    labels = gmm.fit_predict(X)
-    
-    # Plot BIC scores
-    plt.figure(figsize=(10, 6))
-    plt.plot(n_components_range, bic, marker='o')
-    plt.xlabel('Number of components')
-    plt.ylabel('BIC')
-    plt.title('BIC Score vs. Number of GMM Components')
-    plt.savefig('gmm_bic_scores.png', dpi=300, bbox_inches='tight')
-    plt.close()
-    
-    # Plot clustering results
-    plot_gmm(X, gmm, labels, f'GMM Clustering (n_components={optimal_n_components})', 'gmm_clustering.png')
-    
-    return gmm, labels, X
-
 
 def plot_latent_space_kde(data, filename):
     set_plot_style()
@@ -474,7 +418,7 @@ def plot_latent_space_kde(data, filename):
     customize_axes(ax)
     
     plt.tight_layout()
-    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(PLOT_DIR, filename), dpi=300, bbox_inches='tight')
     plt.close()
 
 def plot_latent_space_within_and_beyond_threshold(data, threshold, filename):
@@ -514,7 +458,7 @@ def plot_latent_space_within_and_beyond_threshold(data, threshold, filename):
     ax.legend()
 
     plt.tight_layout()
-    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(PLOT_DIR, filename), dpi=300, bbox_inches='tight')
     plt.close()
 
     # Print the percentage of points that meet the criteria
@@ -542,29 +486,9 @@ def plot_mag_vs_reconstruction(df):
     ax.legend()
     customize_axes(ax)
 
-    
     plt.tight_layout()
-    plt.savefig('mag_vs_reconstruction.png', dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(PLOT_DIR, 'mag_vs_reconstruction.png'), dpi=300, bbox_inches='tight')
     plt.close()
-    
-def set_plot_style():
-    plt.style.use('default')
-    plt.rcParams['figure.figsize'] = (16, 12)
-    plt.rcParams['axes.spines.top'] = False
-    plt.rcParams['axes.spines.right'] = False
-    plt.rcParams['axes.labelsize'] = 16
-    plt.rcParams['axes.titlesize'] = 18
-    plt.rcParams['xtick.labelsize'] = 12
-    plt.rcParams['ytick.labelsize'] = 12
-    plt.rcParams['legend.fontsize'] = 12
-
-def customize_axes(ax):
-    ax.xaxis.set_minor_locator(AutoMinorLocator())
-    ax.yaxis.set_minor_locator(AutoMinorLocator())
-    ax.tick_params(which='both', direction='in')
-    ax.tick_params(which='major', length=10)
-    ax.tick_params(which='minor', length=5)
-
 
 def plot_distance(df):
     # Plot histogram of 'distance' and 'distance_error'
@@ -579,7 +503,7 @@ def plot_distance(df):
     ax[1].set_ylabel('Frequency')
     
     customize_axes(ax[0])
-    plt.savefig('distance_hist.png')
+    plt.savefig(os.path.join(PLOT_DIR, 'distance_hist.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
     # Plot distance vs. distance_error
@@ -589,7 +513,7 @@ def plot_distance(df):
     plt.xlabel('Distance (kpc)')
     plt.ylabel('Distance Error (kpc)')
     customize_axes(plt.gca())
-    plt.savefig('distance_vs_distance_error.png')
+    plt.savefig(os.path.join(PLOT_DIR, 'distance_vs_distance_error.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
 def compute_abs_magnitudes(df):
@@ -614,7 +538,7 @@ def plot_h_r_diagram(df):
     plt.ylabel('G\'')
     customize_axes(plt.gca())
     # plt.grid()
-    plt.savefig('hr_diagram_prime.png', dpi=250)
+    plt.savefig(os.path.join(PLOT_DIR, 'hr_diagram_prime.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
     set_plot_style()
@@ -630,7 +554,7 @@ def plot_h_r_diagram(df):
     plt.ylabel('G')
     customize_axes(plt.gca())
     # plt.grid()
-    plt.savefig('hr_diagram.png', dpi=250)
+    plt.savefig(os.path.join(PLOT_DIR, 'hr_diagram.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
     # Again but r-i
@@ -643,12 +567,8 @@ def plot_h_r_diagram(df):
     plt.ylabel('G')
     customize_axes(plt.gca())
     # plt.grid()
-    plt.savefig('hr_diagram_ri_prime.png', dpi=250)
+    plt.savefig(os.path.join(PLOT_DIR, 'hr_diagram_ri_prime.png'), dpi=300, bbox_inches='tight')
     plt.close()
-    
-
-
-
 
 def color_latent_space_by_ABS_G(df, df_all):
     set_plot_style()
@@ -661,7 +581,7 @@ def color_latent_space_by_ABS_G(df, df_all):
     plt.xlabel('Gamma')
     plt.ylabel('Lambda')
     customize_axes(plt.gca())
-    plt.savefig('color_latent_space_by_abs_g.png')
+    plt.savefig(os.path.join(PLOT_DIR, 'color_latent_space_by_abs_g.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
     # Also color by distance
@@ -674,7 +594,7 @@ def color_latent_space_by_ABS_G(df, df_all):
     plt.xlabel('Gamma')
     plt.ylabel('Lambda')
     customize_axes(plt.gca())
-    plt.savefig('color_latent_space_by_distance.png')
+    plt.savefig(os.path.join(PLOT_DIR, 'color_latent_space_by_distance.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
 def classify_gc_stars(df, gc_data):
@@ -773,7 +693,7 @@ def classify_stars_and_plot_latent_space(df_all, df_simbad, df_gaia, gc_data, fi
     ax.legend(markerscale=2, loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
     customize_axes(ax)
     plt.tight_layout()
-    plt.savefig(f'{filename_prefix}_latent_space_combined_classes.png', dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(PLOT_DIR, 'latent_space_combined_classes.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
     # Plot GC stars only
@@ -791,7 +711,7 @@ def classify_stars_and_plot_latent_space(df_all, df_simbad, df_gaia, gc_data, fi
     ax.legend(markerscale=2, loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
     customize_axes(ax)
     plt.tight_layout()
-    plt.savefig(f'{filename_prefix}_latent_space_GC.png', dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(PLOT_DIR, 'latent_space_GC.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
     # Plot Gaia classifications only
@@ -811,7 +731,7 @@ def classify_stars_and_plot_latent_space(df_all, df_simbad, df_gaia, gc_data, fi
     ax.legend(markerscale=2, loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
     customize_axes(ax)
     plt.tight_layout()
-    plt.savefig(f'{filename_prefix}_latent_space_Gaia.png', dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(PLOT_DIR, 'latent_space_Gaia.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
     # Plot SIMBAD classifications only
@@ -830,10 +750,9 @@ def classify_stars_and_plot_latent_space(df_all, df_simbad, df_gaia, gc_data, fi
     ax.legend(markerscale=2, loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
     customize_axes(ax)
     plt.tight_layout()
-    plt.savefig(f'{filename_prefix}_latent_space_SIMBAD.png', dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(PLOT_DIR, 'latent_space_SIMBAD.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
-    # Print statistics
     print("SIMBAD Classification statistics:")
     print(df_simbad['Combined_class'].value_counts(normalize=True) * 100)
     print("\nGaia Classification statistics:")
@@ -854,7 +773,7 @@ def plot_cmd(df):
     ax[1].invert_yaxis()
     customize_axes(ax[0])
     customize_axes(ax[1])
-    plt.savefig('cmd.png')
+    plt.savefig(os.path.join(PLOT_DIR, 'cmd.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
 def plot_latent_space_by_distance(df, df_all):
@@ -874,7 +793,7 @@ def plot_latent_space_by_distance(df, df_all):
         ax[i].invert_xaxis()
         customize_axes(ax[i])
     plt.tight_layout()
-    plt.savefig('latent_space_by_distance.png')
+    plt.savefig(os.path.join(PLOT_DIR, 'latent_space_by_distance.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
     set_plot_style()
@@ -895,10 +814,14 @@ def plot_latent_space_by_distance(df, df_all):
     plt.gca().invert_xaxis()
     customize_axes(plt.gca())
     plt.tight_layout()
-    plt.savefig('latent_space_distance_1kpc.png')
+    plt.savefig(os.path.join(PLOT_DIR, 'latent_space_distance_1kpc.png'), dpi=300, bbox_inches='tight')
     plt.close()
     
 if __name__ == '__main__':
+
+    DATA_DIR = "/N/project/catypGC/Bradley/Data_ML"
+    PLOT_DIR = "/N/project/catypGC/Bradley/Plots_ML"
+
     object_type_categories = {
     'EclBin_Candidate': 'Binary', 'SB*': 'Binary', 'RSCVnV*': 'Binary', 'BYDraV*': 'Binary', 'EclBin': 'Binary',
     'WhiteDwarf_Candidate': 'Compact Object', 'HotSubdwarf_Candidate': 'Compact Object', 
@@ -928,13 +851,23 @@ if __name__ == '__main__':
         'RR Lyrae': ['RRLyrae', 'RRLyrae_Candidate'],
         'Compact Object': ['HotSubdwarf', 'HotSubdwarf_Candidate']
         }
-    # df_CSFS_grizy = pd.read_csv('C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/CSFS_grizy.csv')
-    df_CSFS_grizy = pd.read_csv('/Users/bradhutc/Library/CloudStorage/OneDrive-Personal/Astrophysics_Research/CSFS_grizy.csv')
-    df_CSFS_err = pd.read_csv('/Users/bradhutc/Library/CloudStorage/OneDrive-Personal/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/data/PS_clean.csv')[['objID','gMeanPSFMagErr', 'rMeanPSFMagErr', 'iMeanPSFMagErr', 'zMeanPSFMagErr', 'yMeanPSFMagErr']]
+    
+    try:
+        df_CSFS_grizy = pd.read_csv(os.path.join(DATA_DIR, 'CSFS_grizy.csv'))
+        df_CSFS_err = pd.read_csv(os.path.join(DATA_DIR, 'PS_clean.csv'))[['objID','gMeanPSFMagErr', 'rMeanPSFMagErr', 'iMeanPSFMagErr', 'zMeanPSFMagErr', 'yMeanPSFMagErr']]
+        df_SIMBAD = pd.read_csv(os.path.join(DATA_DIR, 'simbad_cleaned.csv'))[['objID', 'object_type']]
+        df_GAIA = pd.read_csv(os.path.join(DATA_DIR, 'MatchedTableGaia_bradhutc.csv'))[['objID','parallax', 'parallax_error']]
+    except FileNotFoundError as e:
+        print(f"Error: File not found. {e}")
+        exit(1)
+    except pd.errors.EmptyDataError:
+        print("Error: One of the CSV files is empty.")
+        exit(1)
+    except Exception as e:
+        print(f"An error occurred while reading the files: {e}")
+        exit(1)
+
     df_CSFS_grizy = pd.merge(df_CSFS_grizy, df_CSFS_err, left_on='objID', right_on='objID', how='inner')
-    df_SIMBAD = pd.read_csv('/Users/bradhutc/Library/CloudStorage/OneDrive-Personal/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/data/simbad_cleaned.csv')[['objID', 'object_type']]
-    # df_SIMBAD= pd.read_csv('C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/data/simbad_cleaned.csv')[['objID', 'object_type']]
-    # Plots for CSFS_grizy
     grizy_SIMBAD = pd.merge(df_CSFS_grizy, df_SIMBAD, left_on='objID', right_on='objID', how='inner')
     filtered_data = grizy_SIMBAD[(grizy_SIMBAD['object_type'] != 'Star') & (grizy_SIMBAD['object_type'] != 'Low-Mass*')]
     
@@ -980,12 +913,7 @@ if __name__ == '__main__':
     # plot_latent_space_by_category(df_CSFS_grizy, filtered_data, 'CSFS_grizy_by_category')
     # plot_mag_vs_reconstruction(df_CSFS_grizy)
     
-    
-    # df_GAIA = pd.read_csv('C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/data/MatchedTableGaia_bradhutc.csv')[['objID','parallax', 'parallax_error']]
-    df_GAIA = pd.read_csv('/Users/bradhutc/Library/CloudStorage/OneDrive-Personal/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/data/MatchedTableGaia_bradhutc.csv')[['objID','parallax', 'parallax_error']]
-    # Only positive gaia parallaxes
-    
-    # df_GAIA = df_GAIA[df_GAIA['parallax'] >= 0]
+    df_GAIA = df_GAIA[df_GAIA['parallax'] >= 0]
     df = pd.merge(df_CSFS_grizy, df_GAIA, on='objID', how='inner')
     df['distance'] = 1/df['parallax'] #in kpc
     df['distance_error'] = df['parallax_error']/df['parallax']*df['distance'] #in kpc

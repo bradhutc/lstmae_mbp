@@ -39,7 +39,7 @@ def plot_mag_vs_err(df, output_path):
     ax.legend()
     customize_axes(ax)
     plt.tight_layout()
-    plt.savefig(output_path, dpi=300)
+    plt.savefig(os.path.join(PLOT_DIR, output_filename), dpi=300)
 
 
 def plot_b_vs_l(df):
@@ -58,12 +58,14 @@ def plot_b_vs_l(df):
     
     # ax.grid(True)
     ax.legend()
-    plt.savefig('C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/plots/galactic_projection.png')
+    plt.savefig(os.path.join(PLOT_DIR, 'galactic_projection.png'))
     # plt.show()
 
 
 
 def plot_individual_histograms(df, output_dir):
+    output_dir = os.path.join(PLOT_DIR, output_dir)
+
     columns_to_plot = df.columns.drop('objID')
     
     if not os.path.exists(output_dir):
@@ -92,6 +94,8 @@ def plot_individual_histograms(df, output_dir):
         plt.savefig(filepath, dpi=300)
         plt.close(fig)
     print(f"Histograms saved in the directory: {output_dir}")
+
+
 def plot_band_measurements(df):
     band_columns = ['gMeanPSFMagNpt', 'rMeanPSFMagNpt', 'iMeanPSFMagNpt', 'zMeanPSFMagNpt', 'yMeanPSFMagNpt']
     band_labels = ['g', 'r', 'i', 'z', 'y']
@@ -113,7 +117,7 @@ def plot_band_measurements(df):
         ax.text(i, v + 0.1, str(int(v)), ha='center')
     
     plt.tight_layout()
-    plt.savefig('C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/plots/band_measurements.png', dpi=300)
+    output_dir = os.path.join(PLOT_DIR, output_dir)
 
 def plot_b_vs_l_zoomed(df, l_center, b_center, name, radius=5):
     set_plot_style()
@@ -144,9 +148,8 @@ def plot_b_vs_l_zoomed(df, l_center, b_center, name, radius=5):
     
     ax.legend()
     plt.tight_layout()
-    plt.savefig(f'C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/plots/{name}_galactic_plot_zoomed.png')
+    plt.savefig(os.path.join(PLOT_DIR, f'{name}_galactic_plot_zoomed.png'), dpi=300)
     # plt.show()
-
 
 def plot_hexbin_cmd(merged_df):
     set_plot_style()
@@ -162,7 +165,7 @@ def plot_hexbin_cmd(merged_df):
     cb.set_label('log(N)')
     customize_axes(plt.gca())
     plt.tight_layout()
-    plt.savefig('hexbin_cmd.png', dpi=300)
+    plt.savefig(os.path.join(PLOT_DIR, 'hexbin_cmd.png'), dpi=300)
     plt.close()
     
     set_plot_style()
@@ -177,7 +180,7 @@ def plot_hexbin_cmd(merged_df):
     cb.set_label('log(N)')
     customize_axes(plt.gca())
     plt.tight_layout()
-    plt.savefig('gmag_g_r.png', dpi=300)
+    plt.savefig(os.path.join(PLOT_DIR, 'gmag_g_r.png'), dpi=300)
     plt.close()
     
 
@@ -189,48 +192,8 @@ def plot_hexbin_cmd(merged_df):
     customize_axes(plt.gca())
     plt.gca().invert_yaxis()  # Invert the y-axis
     plt.tight_layout()
-    plt.savefig('rmag_r_i.png', dpi=300)
+    plt.savefig(os.path.join(PLOT_DIR, 'rmag_r_i.png'), dpi=300)
     plt.close()
-    
-    # plt.figure(figsize=(10, 8))
-    # plt.hexbin(merged_df['rMeanPSFMag'] - merged_df['zMeanPSFMag'], merged_df['rMeanPSFMag'], gridsize=150, cmap='gist_heat', bins='log')
-    # plt.xlabel('r - z')
-    # plt.ylabel('r')
-    # plt.title('Hexbin Plot: r vs r-z')
-    # plt.gca().invert_yaxis()  # Invert the y-axis
-    # plt.tight_layout()
-    # plt.savefig('hexbin_cmd4.png', dpi=300)
-    # plt.close()
-    
-    # plt.figure(figsize=(10, 8))
-    # plt.hexbin(merged_df['zMeanPSFMag'] - merged_df['yMeanPSFMag'], merged_df['zMeanPSFMag'], gridsize=150, cmap='gist_heat', bins='log')
-    # plt.xlabel('z - y')
-    # plt.ylabel('z')
-    # plt.title('Hexbin Plot: z vs z-y')
-    # plt.gca().invert_yaxis()  # Invert the y-axis
-    # plt.tight_layout()
-    # plt.savefig('hexbin_cmd5.png', dpi=300)
-    # plt.close()
-    
-    # plt.figure(figsize=(10, 8))
-    # plt.hexbin(merged_df['gMeanPSFMag'] - merged_df['zMeanPSFMag'], merged_df['gMeanPSFMag'], gridsize=150, cmap='gist_heat', bins='log')
-    # plt.xlabel('g - z')
-    # plt.ylabel('g')
-    # plt.title('Hexbin Plot: g vs g-z')
-    # plt.gca().invert_yaxis()  # Invert the y-axis
-    # plt.tight_layout()
-    # plt.savefig('hexbin_cmd6.png', dpi=300)
-    # plt.close()
-    
-    # plt.figure(figsize=(10, 8))
-    # plt.hexbin(merged_df['iMeanPSFMag'] - merged_df['yMeanPSFMag'], merged_df['iMeanPSFMag'], gridsize=150, cmap='gist_heat', bins='log')
-    # plt.xlabel('i - y')
-    # plt.ylabel('i')
-    # plt.title('Hexbin Plot: i vs i-y')
-    # plt.gca().invert_yaxis()  # Invert the y-axis
-    # plt.tight_layout()
-    # plt.savefig('hexbin_cmd7.png', dpi=300)
-    # plt.close()
     
 def plot_hexbin_colorcolor(merged_df):
     plt.figure(figsize=(10, 8))
@@ -239,7 +202,7 @@ def plot_hexbin_colorcolor(merged_df):
     plt.ylabel('r - i')
     plt.title('Color-Color Diagram: g-r vs r-i')
     plt.tight_layout()
-    plt.savefig('color_color_diagram.png', dpi=300)
+    plt.savefig(os.path.join(PLOT_DIR, 'color_color_diagram.png'), dpi=300)
     plt.close()
 
 def plot_raerr_decerr(df):
@@ -266,7 +229,7 @@ def plot_raerr_decerr(df):
     # Adjust the layout and display the legend
     fig.tight_layout()
     ax.legend()
-    plt.savefig('C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/figures/raerr_decerr_hist.png', dpi=300)
+    plt.savefig(os.path.join(PLOT_DIR, 'raerr_decerr_hist.png'), dpi=300)
     
     # Print statistics of RAERR and DECERR in arcseconds
     print("RAERR Statistics (milliarcseconds):")
@@ -295,7 +258,7 @@ def compute_galactic_coordinates(df):
     plt.ylabel('Galactic Latitude (b)')
     plt.title('Distribution of Galactic Coordinates')
     plt.tight_layout()
-    plt.savefig('galactic_coordinates.png', format='png', dpi=300)
+    plt.savefig(os.path.join(PLOT_DIR, 'galactic_coordinates.png'), format='png', dpi=300)
     
     return df
 
@@ -316,7 +279,7 @@ def plot_cmd_GC(filtered_data, filename, l_center, b_center, radius, name):
         plt.title(f'Color-Magnitude Diagram (CMD) of {name} within {radius} degrees of (l={l_center}, b={b_center})')
         plt.gca().invert_yaxis()  # Invert the y-axis
         plt.tight_layout()
-        plt.savefig(filename, format='png', dpi=500)
+        plt.savefig(os.path.join(PLOT_DIR, filename), format='png', dpi=500)
         plt.close()
         
         # plot r vs g-r
@@ -327,7 +290,7 @@ def plot_cmd_GC(filtered_data, filename, l_center, b_center, radius, name):
         plt.title(f'Color-Magnitude Diagram (CMD) of {name} within {radius} degrees of (l={l_center}, b={b_center})')
         plt.gca().invert_yaxis()  # Invert the y-axis
         plt.tight_layout()
-        plt.savefig(f'r_{filename}', format='png', dpi=500)
+        plt.savefig(os.path.join(PLOT_DIR, f'r_{filename}'), format='png', dpi=500)
         plt.close()
     else:
         print("No data points found within the specified radius.")
@@ -351,7 +314,8 @@ def plot_region_by_galactic_coordinates(data, band1, band2, mag_range, color_ran
         plt.ylabel('Galactic Latitude (b)')
         plt.title(f'Distribution of Stars in the Selected Region\n{band1} in [{mag_min}, {mag_max}], {color} in [{color_min}, {color_max}]')
         plt.tight_layout()
-        plt.savefig(filename, format='png', dpi=300)
+        plt.savefig(os.path.join(PLOT_DIR, filename), format='png', dpi=300)
+
     else:
         print("No data points found within the specified magnitude and color range.")
 
@@ -403,7 +367,7 @@ def plot_sdss_twomass_CMDs(df):
     plt.ylabel('u')
     plt.title('Color-Magnitude Diagram')
     plt.colorbar(label='Count')
-    plt.savefig('C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/plots/color_magnitude_diagram_u.png')
+    plt.savefig('color_magnitude_diagram_u.png')
   
     plt.figure(figsize=(8, 6))
     mask = df['jmag'].notna() & df['hmag'].notna()
@@ -416,14 +380,22 @@ def plot_sdss_twomass_CMDs(df):
     plt.ylabel('j')
     plt.title('Color-Magnitude Diagram')
     plt.colorbar(label='Count')
-    plt.savefig('C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/plots/color_magnitude_diagram_j.png')
+    plt.savefig('color_magnitude_diagram_j.png')
 
 if __name__ == '__main__':
-    # Pan_Starrs_Phot = pd.read_csv('C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/data/PhotTable_bradhutc.csv')
-    Pan_Starrs_Phot = pd.read_csv('/Users/bradhutc/Library/CloudStorage/OneDrive-Personal/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/data/PhotTable_bradhutc.csv')
+
+    PLOT_DIR = "/N/project/catypGC/Bradley/Plots_ML"
+    DATA_DIR = "/N/project/catypGC/Bradley/Data_ML"
+    os.makedirs(PLOT_DIR, exist_ok=True)
+    os.makedirs(DATA_DIR, exist_ok=True)
+
+    Pan_Starrs_Phot = pd.read_csv(os.path.join(DATA_DIR, 'PhotTable_bradhutc.csv'))
+    Pan_Starrs_Pos = pd.read_csv(os.path.join(DATA_DIR, 'MatchedTable_bradhutc.csv'))
+    SDSS_Phot = pd.read_csv(os.path.join(DATA_DIR, 'MatchedTableSDSS_bradhutc.csv'))[['objID', 'psfMag_u', 'psfMagErr_u']]
+    TWO_MASS_Phot = pd.read_csv(os.path.join(DATA_DIR, 'MatchedTable2MASS_bradhutc.csv'))[['objID', 'jmag', 'jmag_err', 'hmag', 'hmag_err', 'kmag', 'kmag_err']]
+ 
     print(f'{len(Pan_Starrs_Phot)} Pan-STARRS Photometry entries loaded.')
-    # Pan_Starrs_Pos=pd.read_csv('C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/data/MatchedTable_bradhutc.csv')
-    Pan_Starrs_Pos = pd.read_csv('/Users/bradhutc/Library/CloudStorage/OneDrive-Personal/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/data/MatchedTable_bradhutc.csv')   
+
     Pan_Starrs = pd.merge(Pan_Starrs_Phot, Pan_Starrs_Pos, on='objID')
     bands = ['g', 'r', 'i', 'z', 'y']
     
@@ -450,10 +422,7 @@ if __name__ == '__main__':
         
     Pan_Starrs = Pan_Starrs[np.all(conditions, axis=0)]
     print(f'{len(Pan_Starrs)} Clean Stars PS loaded.')
-    # SDSS_Phot = pd.read_csv('C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/data/MatchedTableSDSS_bradhutc.csv')[['objID', 'psfMag_u', 'psfMagErr_u']]
-    # TWO_MASS_Phot = pd.read_csv('C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/data/MatchedTable2MASS_bradhutc.csv')[['objID', 'jmag', 'jmag_err', 'hmag', 'hmag_err', 'kmag', 'kmag_err']]
-    SDSS_Phot = pd.read_csv('/Users/bradhutc/Library/CloudStorage/OneDrive-Personal/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/data/MatchedTableSDSS_bradhutc.csv')[['objID', 'psfMag_u', 'psfMagErr_u']]
-    TWO_MASS_Phot = pd.read_csv('/Users/bradhutc/Library/CloudStorage/OneDrive-Personal/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/data/MatchedTable2MASS_bradhutc.csv')[['objID', 'jmag', 'jmag_err', 'hmag', 'hmag_err', 'kmag', 'kmag_err']]
+    
     SDSS_Phot = SDSS_Phot[(SDSS_Phot['psfMag_u'] > 0) & (SDSS_Phot['psfMag_u'] < 26) & (SDSS_Phot['psfMagErr_u'] <= 0.05)
                            ]
     print(f'{len(SDSS_Phot)} Clean Stars loaded from SDSS.')
@@ -462,7 +431,6 @@ if __name__ == '__main__':
     TWO_MASS_Phot = TWO_MASS_Phot.dropna(subset=['jmag_err', 'hmag_err', 'kmag_err'])
     TWO_MASS_Phot = TWO_MASS_Phot[(TWO_MASS_Phot['jmag_err'] <= 0.05) & (TWO_MASS_Phot['hmag_err'] <= 0.05) & (TWO_MASS_Phot['kmag_err'] <= 0.05)]
     print(f'{len(TWO_MASS_Phot)} Clean Stars loaded from 2MASS.')
-    # positions = pd.read_csv('C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/data/MatchedTable_bradhutc.csv')
     df = pd.merge(Pan_Starrs, SDSS_Phot, on='objID', how='left')
     df = pd.merge(df, TWO_MASS_Phot, on='objID', how='left')
     df['psfMag_u'].fillna(np.nan, inplace=True)  # Default missing 'psfMag_u' values to np.nan
@@ -475,7 +443,6 @@ if __name__ == '__main__':
     ((df['jmag'].notna() & df['hmag'].notna() & (df['jmag'] - df['hmag'] <= 1)) | df['jmag'].isna() | df['hmag'].isna())
 ]
     print(f'{len(df)} Clean Stars loaded.')
-    os.makedirs('C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/plots', exist_ok=True)
     plot_raerr_decerr(df)
     # Convert RAERR and DECERR to arcseconds
     df['raerr_milliarcsec'] = df['raMeanErr'] * 1000
@@ -488,7 +455,7 @@ if __name__ == '__main__':
     # Filter df based on RAERR and DECERR less than 10 arcseconds
     print(f'Filtered dataframe with RAERR and DECERR < 1000 milliarcseconds contains {len(df)} entries.')
     df['g-i'] = df['gMeanPSFMag'] - df['iMeanPSFMag']
-    ngp_file = 'C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/data/SFD_dust_4096_ngp.fits'
+    ngp_file = '/N/project/catypGC/Bradley/Data_ML/SFD_dust_4096_ngp.fits'
     m = sfdmap.SFDMap(ngp_file)
     np.int = int
     # Get the RA and Dec values from the DataFrame
@@ -521,7 +488,7 @@ if __name__ == '__main__':
     simbad_ready_to_match = df[(df['raerr_milliarcsec'] < 100) & (df['decerr_milliarcsec'] < 100)]
     print(f"Filtered merged dataframe with RAERR and DECERR < 100 milliarcseconds contains {len(simbad_ready_to_match)} entries. These are now ready to match to SIMBAD.")
     
-    plot_mag_vs_err(df_grizy, 'C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/plots/mag_vs_err_grizy.png')
+    plot_mag_vs_err(df_grizy, 'mag_vs_err_grizy.png')
     plot_sdss_twomass_CMDs(df)
     plot_hexbin_cmd(df_grizy)
     plot_hexbin_colorcolor(df_grizy)
@@ -533,7 +500,7 @@ if __name__ == '__main__':
     
     plot_b_vs_l(df_grizy)
     plot_band_measurements(df_grizy)
-    plot_individual_histograms(df_grizy, 'C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/plots/histograms')
+    plot_individual_histograms(df_grizy, 'histograms')
     
     df_grizy = Pan_Starrs
     df_grizy = compute_galactic_coordinates(df_grizy)
@@ -545,5 +512,5 @@ if __name__ == '__main__':
     plot_region_by_galactic_coordinates(df_grizy,'gMeanPSFMag', 'iMeanPSFMag', (19.5, 20.5), (1, 1.5), 'region1.png')
     plot_region_by_galactic_coordinates(df_grizy,'gMeanPSFMag', 'iMeanPSFMag', (20, 22), (1.5, 2.5), 'region2.png')
 
-    # simbad_ready_to_match.to_csv('C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/data/simbad_rtm.csv')
-    df_grizy.to_csv('C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/data/PS_clean.csv', index=False)
+    simbad_ready_to_match.to_csv(os.path.join(DATA_DIR, 'simbad_rtm.csv'))
+    df_grizy.to_csv(os.path.join(DATA_DIR, 'PS_clean.csv'), index=False)

@@ -2,46 +2,22 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
-from keras.models import Model
-from keras.models import Sequential
-from keras.layers import LSTM, Dense, RepeatVector, TimeDistributed, Dropout
+from sklearn.preprocessing import MinMaxScaler
+from keras.models import Model, Sequential
+from keras.layers import LSTM, Dense, RepeatVector, TimeDistributed
 from keras.callbacks import Callback, EarlyStopping
-from keras.optimizers import Adam
-import gzip
 import numpy as np
 from sklearn.metrics import r2_score
 import tensorflow as tf
+
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
-
-# gpus = tf.config.list_physical_devices('GPU')
-# tf.debugging.set_log_device_placement(True)
-# gpus = tf.config.list_physical_devices('GPU')
-# if gpus:
-#   # Restrict TensorFlow to only use the first GPU
-#   try:
-#     tf.config.set_visible_devices(gpus[0], 'GPU')
-#     logical_gpus = tf.config.list_logical_devices('GPU')
-#     print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPU")
-#   except RuntimeError as e:
-#     # Visible devices must be set before GPUs have been initialized
-#     print(e)
-
 
 class LSTMAutoencoder:
     def __init__(self, input_shape):
-        # self.model.add(TimeDistributed(Dense(5)))
-        # self.model.compile(optimizer='adam', loss='mse')
-        # self.encoder = Model(inputs=self.model.inputs, outputs=self.model.layers[0].output)
         self.model = Sequential()
         self.model.add(LSTM(128, activation='elu', input_shape=(input_shape, 5), return_sequences=True))
-        # self.model.add(LSTM(64, activation='elu', return_sequences=True))
-        # self.model.add(LSTM(32, activation='elu', return_sequences=True))
         self.model.add(LSTM(2, activation='elu', return_sequences=False))
         self.model.add(RepeatVector(input_shape))
-        # self.model.add(LSTM(32, activation='elu', return_sequences=True))
-        # self.model.add(Dropout(0.2))
-        # self.model.add(LSTM(64, activation='elu', return_sequences=True))
         self.model.add(LSTM(128, activation='elu', return_sequences=True))
         self.model.add(LSTM(5, activation='elu', return_sequences=True))
     
@@ -49,9 +25,8 @@ class LSTMAutoencoder:
         self.encoder = Model(inputs=self.model.inputs, outputs=self.model.layers[1].output)
 
     def train(self, train_data, test_data, epochs=5, batch_size=32, callbacks=None):
-        history = self.model.fit(train_data, train_data, epochs=epochs, batch_size=batch_size,
-                                 validation_data=(test_data, test_data), verbose=1, callbacks=callbacks)
-        return history
+        return self.model.fit(train_data, train_data, epochs=epochs, batch_size=batch_size,
+                              validation_data=(test_data, test_data), verbose=1, callbacks=callbacks)
 
     def predict(self, data):
         return self.model.predict(data)
@@ -84,22 +59,15 @@ class CompositeStellarFeatureSpace(Callback):
         os.makedirs(os.path.dirname(self.filepath), exist_ok=True)
         plt.savefig(f'{self.filepath}_epoch_{epoch+1}.png', format='png', dpi=500)
         plt.close()
-        
-         
+
 def prepare_data(autoencoder, data, scaler, dataset_type, y_data):
-    # Extract latent representations
     latent_representations = autoencoder.extract_latent_space(data)
-
-    # Reconstruct the magnitudes
     reconstructed_magnitudes = autoencoder.reconstruct(data).reshape(-1, 5)
-
-    # Prepare the DataFrame
     original_data_scaled_back = scaler.inverse_transform(data.reshape(-1, 5))
     df = pd.DataFrame(original_data_scaled_back, columns=['gMeanPSFMag', 'rMeanPSFMag', 'iMeanPSFMag', 'zMeanPSFMag', 'yMeanPSFMag'])
     df[['Gamma', 'Lambda']] = latent_representations
     df[['gMeanPSFMag_prime', 'rMeanPSFMag_prime', 'iMeanPSFMag_prime', 'zMeanPSFMag_prime', 'yMeanPSFMag_prime']] = scaler.inverse_transform(reconstructed_magnitudes)
     
-    # Calculate R-squared score for each magnitude
     r2_scores = {}
     for mag in ['gMeanPSFMag', 'rMeanPSFMag', 'iMeanPSFMag', 'zMeanPSFMag', 'yMeanPSFMag']:
         r2_scores[f'{mag}_r2'] = r2_score(df[mag], df[f'{mag}_prime'])
@@ -114,58 +82,69 @@ def prepare_data(autoencoder, data, scaler, dataset_type, y_data):
     
     return df
 
+if __name__ == '__main__':
 
-file_path = 'C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/data/PS_clean.csv'
-full_data = pd.read_csv(file_path)[['gMeanPSFMag', 'rMeanPSFMag', 'iMeanPSFMag', 'zMeanPSFMag', 'yMeanPSFMag','objID','raMean','decMean','l','b']]
-full_data = full_data.dropna()
-scaler = MinMaxScaler()
-data = full_data[[ 'gMeanPSFMag', 'rMeanPSFMag', 'iMeanPSFMag', 'zMeanPSFMag','yMeanPSFMag','objID','raMean','decMean','l','b']]
-data_array = data.to_numpy()
-features= ['gMeanPSFMag', 'rMeanPSFMag', 'iMeanPSFMag', 'zMeanPSFMag','yMeanPSFMag']
-X = data[features]
-y = data.drop(columns=features)
+    DATA_DIR = "/N/project/catypGC/Bradley/Data_ML"
+    PLOT_DIR = "/N/project/catypGC/Bradley/Plots_ML"
+   
+    try:
+        file_path = os.path.join(DATA_DIR, 'PS_clean.csv')
+        full_data = pd.read_csv(file_path)[['gMeanPSFMag', 'rMeanPSFMag', 'iMeanPSFMag', 'zMeanPSFMag', 'yMeanPSFMag','objID','raMean','decMean','l','b']]
+        full_data = full_data.dropna()
+    except FileNotFoundError:
+        print(f"Error: The file {file_path} was not found.")
+        exit(1)
+    except pd.errors.EmptyDataError:
+        print(f"Error: The file {file_path} is empty.")
+        exit(1)
+    except Exception as e:
+        print(f"An error occurred while reading the file: {e}")
+        exit(1)
 
-# Split data into train, validation, and test sets
-X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.2, random_state=42)
-X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+    scaler = MinMaxScaler()
+    features = ['gMeanPSFMag', 'rMeanPSFMag', 'iMeanPSFMag', 'zMeanPSFMag','yMeanPSFMag']
+    X = full_data[features]
+    y = full_data.drop(columns=features)
 
-# Scale features
-scaler = MinMaxScaler()
-X_train_scaled = np.round(scaler.fit_transform(X_train), 3).astype('float16')
-X_val_scaled = np.round(scaler.transform(X_val), 3).astype('float16')
-X_test_scaled = np.round(scaler.transform(X_test), 3).astype('float16')
-train_data = X_train_scaled.reshape((X_train_scaled.shape[0], 1, X_train_scaled.shape[1]))
-val_data = X_val_scaled.reshape((X_val_scaled.shape[0], 1, X_val_scaled.shape[1]))
-test_data = X_test_scaled.reshape((X_test_scaled.shape[0], 1, X_test_scaled.shape[1]))
-autoencoder = LSTMAutoencoder(input_shape=1)
-plotter = CompositeStellarFeatureSpace(encoder=autoencoder.encoder, data=train_data, scaler=scaler, filepath='C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/plots/CSFS/')
-early_stopping = EarlyStopping(monitor='val_loss', patience=5, mode='min', restore_best_weights=True)
+    X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
 
-# Now train the model with the callbacks
-history = autoencoder.train(train_data, val_data, epochs=50, batch_size=512, callbacks=[plotter, early_stopping])
+    scaler = MinMaxScaler()
+    X_train_scaled = np.round(scaler.fit_transform(X_train), 3).astype('float16')
+    X_val_scaled = np.round(scaler.transform(X_val), 3).astype('float16')
+    X_test_scaled = np.round(scaler.transform(X_test), 3).astype('float16')
+    train_data = X_train_scaled.reshape((X_train_scaled.shape[0], 1, X_train_scaled.shape[1]))
+    val_data = X_val_scaled.reshape((X_val_scaled.shape[0], 1, X_val_scaled.shape[1]))
+    test_data = X_test_scaled.reshape((X_test_scaled.shape[0], 1, X_test_scaled.shape[1]))
 
-test_loss = autoencoder.model.evaluate(test_data, test_data)
-print(f'Test Loss: {test_loss}')
+    autoencoder = LSTMAutoencoder(input_shape=1)
+    plotter = CompositeStellarFeatureSpace(encoder=autoencoder.encoder, data=train_data, scaler=scaler, 
+                                           filepath=os.path.join(PLOT_DIR, 'CSFS'))
+    early_stopping = EarlyStopping(monitor='val_loss', patience=5, mode='min', restore_best_weights=True)
 
-# Prepare and combine data frames with correct labels
-train_df = prepare_data(autoencoder, train_data, scaler, 'train', y_train)
-val_df = prepare_data(autoencoder, val_data, scaler, 'validation', y_val)
-test_df = prepare_data(autoencoder, test_data, scaler, 'test', y_test)
-complete_df = pd.concat([train_df, val_df, test_df], ignore_index=True)
-# Save the DataFrame to CSV
-complete_df.to_csv('CSFS_grizy.csv', index=False)
+    history = autoencoder.train(train_data, val_data, epochs=50, batch_size=512, callbacks=[plotter, early_stopping])
 
-# Save loss and validation loss to CSV
-history_df = pd.DataFrame(history.history)
-history_df.to_csv('training_history.csv', index=False)
+    test_loss = autoencoder.model.evaluate(test_data, test_data)
+    print(f'Test Loss: {test_loss}')
 
-plt.figure(figsize=(8, 6))
-plt.plot(history.history['loss'], label='Training Loss')
-plt.plot(history.history['val_loss'], label='Validation Loss')
-plt.yscale('log')  # Set y-axis to logarithmic scale
-plt.title('Model Loss')
-plt.ylabel('Log Loss')
-plt.xlabel('Epoch')
-plt.legend(loc='upper right')
-plt.savefig('log_loss_vs_epochs.png', format='png', dpi=500)
-plt.close()
+    train_df = prepare_data(autoencoder, train_data, scaler, 'train', y_train)
+    val_df = prepare_data(autoencoder, val_data, scaler, 'validation', y_val)
+    test_df = prepare_data(autoencoder, test_data, scaler, 'test', y_test)
+    complete_df = pd.concat([train_df, val_df, test_df], ignore_index=True)
+
+    try:
+        complete_df.to_csv(os.path.join(DATA_DIR, 'CSFS_grizy.csv'), index=False)
+        pd.DataFrame(history.history).to_csv(os.path.join(DATA_DIR, 'training_history.csv'), index=False)
+    except Exception as e:
+        print(f"Error saving CSV files: {e}")
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(history.history['loss'], label='Training Loss')
+    plt.plot(history.history['val_loss'], label='Validation Loss')
+    plt.yscale('log')
+    plt.title('Model Loss')
+    plt.ylabel('Log Loss')
+    plt.xlabel('Epoch')
+    plt.legend(loc='upper right')
+    plt.savefig(os.path.join(PLOT_DIR, 'log_loss_vs_epochs.png'), format='png', dpi=500)
+    plt.close()
