@@ -5,14 +5,14 @@ from astropy.coordinates import SkyCoord
 from astropy import units as u
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-csv_file_path = 'C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/Pan-Starrs_Data/PS_filtered.csv'
+csv_file_path = 'C:/Users/Bradl/OneDrive/Astrophysics_Research/lstmae_mbp/Pan-STARRS_Analysis/Pan-Starrs_Data/PS_Clean.csv'
 df = pd.read_csv(csv_file_path)
 df = df[['raMean', 'decMean', 'objID']]
 print(f"Loaded {len(df)} stars from {csv_file_path}.")
 
 # Initialize Simbad query
 simbad_query = Simbad()
-simbad_query.add_votable_fields('otype', 'flux(J)', 'flux(H)', 'flux(K)', 'ra(d)', 'dec(d)') # Added RA and Dec in degrees
+simbad_query.add_votable_fields('otype', 'ra(d)', 'dec(d)') # Added RA and Dec in degrees
 
 def query_simbad(row):
     ra = row['raMean']
@@ -40,9 +40,6 @@ def query_simbad(row):
                 'object_type': result_df['OTYPE'].values[0],
                 'ra_prec': result_df['RA_PREC'].values[0],
                 'dec_prec': result_df['DEC_PREC'].values[0],
-                'j': result_df['FLUX_J'].values[0],
-                'h': result_df['FLUX_H'].values[0],
-                'k': result_df['FLUX_K'].values[0],
             }
     except Exception as e:
         print(f"Error querying Simbad for RA: {ra}, Dec: {dec}: {e}")
@@ -60,4 +57,4 @@ if results:
     print("Matched stars with distances saved to 'simbad_matched.csv'.")
 else:
     print("No Simbad results found for the given stars.")
-
+    
